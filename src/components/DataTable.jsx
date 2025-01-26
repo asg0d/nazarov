@@ -12,6 +12,7 @@ import {
   Box,
   Alert,
 } from '@mui/material';
+import { formatNumber } from '../utils/formatNumber';
 
 const DataTable = ({ onDataLoaded }) => {
   const [tableData, setTableData] = useState([]);
@@ -34,14 +35,14 @@ const DataTable = ({ onDataLoaded }) => {
         const year = parseInt(row[0]) || 0;
         const oil = parseFloat(row[1]) || 0;
         const liquid = parseFloat(row[2]) || 0;
-        const waters = Math.abs((liquid - oil).toFixed(3));
+        const waters = Math.abs(liquid - oil);
 
         // Calculate watercut based on previous row
         const prevRow = index > 0 ? validData[index] : null;
         const prevLiquid = prevRow ? parseFloat(prevRow[2]) || 0 : 0;
         const watercut = index > 0 && prevLiquid > 0
-          ? (((liquid - prevLiquid) / prevLiquid) * 100).toFixed(2)
-          : "0.00";
+          ? ((liquid - prevLiquid) / prevLiquid) * 100
+          : 0;
 
         // Set active points (last 11 rows by default)
         const isActive = index >= validData.length - 12 ? "1" : "0";
@@ -49,10 +50,10 @@ const DataTable = ({ onDataLoaded }) => {
         return {
           no: index + 1,
           year,
-          oil,
-          liquid,
-          waters,
-          watercut,
+          oil: formatNumber(oil),
+          liquid: formatNumber(liquid),
+          waters: formatNumber(waters),
+          watercut: formatNumber(watercut),
           activePoint: isActive,
         };
       });
@@ -110,19 +111,20 @@ const DataTable = ({ onDataLoaded }) => {
 
   return (
     <Box sx={{ width: '100%', mt: 3 }}>
-      <Button
-        variant="contained"
-        component="label"
-        sx={{ mb: 2 }}
-      >
-        Import Excel File
+      <Box sx={{ mb: 2 }}>
         <input
+          accept=".xlsx,.xls"
+          style={{ display: 'none' }}
+          id="file-upload"
           type="file"
-          hidden
-          accept=".xlsx, .xls"
           onChange={handleFileUpload}
         />
-      </Button>
+        <label htmlFor="file-upload">
+          <Button variant="contained" component="span">
+            Upload Excel File
+          </Button>
+        </label>
+      </Box>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -152,9 +154,9 @@ const DataTable = ({ onDataLoaded }) => {
                 >
                   <TableCell>{row.no}</TableCell>
                   <TableCell align="right">{row.year}</TableCell>
-                  <TableCell align="right">{Number(row.oil).toFixed(3)}</TableCell>
-                  <TableCell align="right">{Number(row.liquid).toFixed(3)}</TableCell>
-                  <TableCell align="right">{Number(row.waters).toFixed(3)}</TableCell>
+                  <TableCell align="right">{row.oil}</TableCell>
+                  <TableCell align="right">{row.liquid}</TableCell>
+                  <TableCell align="right">{row.waters}</TableCell>
                   <TableCell align="right">{row.watercut}</TableCell>
                   <TableCell align="right">{row.activePoint}</TableCell>
                 </TableRow>

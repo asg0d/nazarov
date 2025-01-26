@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Container, AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { Container, AppBar, Toolbar, Typography, Button, Box, MenuItem, Select } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import './i18n';
 import DataTable from './components/DataTable'
 import Chart from './components/Chart'
 import ActivePoints from './components/ActivePoints'
@@ -10,6 +12,11 @@ function App() {
   const [data, setData] = useState([]);
   const [calculations, setCalculations] = useState(null);
   const [openActivePoints, setOpenActivePoints] = useState(false);
+  const { t, i18n } = useTranslation();
+
+  const handleLanguageChange = (event) => {
+    i18n.changeLanguage(event.target.value);
+  };
 
   const handleDataLoaded = (newData) => {
     setData(newData);
@@ -33,13 +40,23 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Production Data Analysis
+            {t('title')}
           </Typography>
+          <Select
+            value={i18n.language}
+            onChange={handleLanguageChange}
+            sx={{ mr: 2, color: 'white', '& .MuiSelect-icon': { color: 'white' } }}
+            variant="standard"
+          >
+            <MenuItem value="en">English</MenuItem>
+            <MenuItem value="ru">Русский</MenuItem>
+            <MenuItem value="uz">O'zbek</MenuItem>
+          </Select>
           <Button 
             color="inherit" 
             onClick={() => setOpenActivePoints(true)}
           >
-            Set Active Points
+            {t('setActivePoints')}
           </Button>
         </Toolbar>
       </AppBar>

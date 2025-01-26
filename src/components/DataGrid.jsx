@@ -8,6 +8,7 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
+import { formatNumber } from '../utils/formatNumber';
 
 const DataGrid = ({ data }) => {
   if (!data || data.length === 0) return null;
@@ -32,7 +33,7 @@ const DataGrid = ({ data }) => {
               {columns.map((column, colIndex) => (
                 <TableCell key={colIndex} align="right">
                   {typeof row[column] === 'number' 
-                    ? Number(row[column]).toFixed(3) 
+                    ? formatNumber(row[column])
                     : row[column]}
                 </TableCell>
               ))}

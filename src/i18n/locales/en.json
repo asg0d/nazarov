@@ -1,0 +1,10 @@
+{
+  "title": "Production Data Analysis",
+  "setActivePoints": "Set Active Points",
+  "language": "Language",
+  "dataAnalysis": {
+    "chart": "Chart",
+    "statistics": "Statistics",
+    "data": "Data"
+  }
+}
