@@ -1,14 +1,93 @@
 export const calculateAll = (data) => {
   if (!data || data.length === 0) return {};
 
+  const ns = calculateNS(data);
+  const sp = calculateSP(data);
+  const m = calculateM(data);
+  const s = calculateS(data);
+  const p = calculateP(data);
+  const k = calculateK(data);
+
   return {
-    ns_calc: calculateNS(data),
-    sp_calc: calculateSP(data),
-    m_calc: calculateM(data),
-    s_calc: calculateS(data),
-    p_calc: calculateP(data),
-    k_calc: calculateK(data),
+    ns_calc: ns,
+    sp_calc: sp,
+    m_calc: m,
+    s_calc: s,
+    p_calc: p,
+    k_calc: k,
+    results: calculateResults(data, ns, sp, m, s, p, k)
   };
+};
+
+const calculateResults = (data, ns, sp, m, s, p, k) => {
+  // Get active points (points marked with "1")
+  const activePoints = data.filter(row => row.activePoint === "1");
+  
+  if (activePoints.length === 0) return [];
+
+  // Calculate averages for active points
+  const avgLiquid = activePoints.reduce((sum, row) => sum + parseFloat(row.liquid), 0) / activePoints.length;
+  const avgOil = activePoints.reduce((sum, row) => sum + parseFloat(row.oil), 0) / activePoints.length;
+  
+  // Calculate final results based on all methods
+  const results = [
+    { year: 'N/S', value: calculateNSResult(ns, activePoints) },
+    { year: 'S/P', value: calculateSPResult(sp, activePoints) },
+    { year: 'M', value: calculateMResult(m, activePoints) },
+    { year: 'S', value: calculateSResult(s, activePoints) },
+    { year: 'P', value: calculatePResult(p, activePoints) },
+    { year: 'K', value: calculateKResult(k, activePoints) }
+  ];
+
+  return results.filter(result => !isNaN(result.value) && isFinite(result.value));
+};
+
+const calculateNSResult = (ns, activePoints) => {
+  if (!ns || activePoints.length === 0) return 0;
+  const activeNS = ns.filter(item => 
+    activePoints.some(ap => ap.year === item.year)
+  );
+  return activeNS.reduce((sum, item) => sum + item.relativeDelta, 0) / activeNS.length;
+};
+
+const calculateSPResult = (sp, activePoints) => {
+  if (!sp || activePoints.length === 0) return 0;
+  const activeSP = sp.filter(item => 
+    activePoints.some(ap => ap.year === item.year)
+  );
+  return activeSP.reduce((sum, item) => sum + item.watercut, 0) / activeSP.length;
+};
+
+const calculateMResult = (m, activePoints) => {
+  if (!m || activePoints.length === 0) return 0;
+  const activeM = m.filter(item => 
+    activePoints.some(ap => ap.year === item.year)
+  );
+  return activeM.reduce((sum, item) => sum + item.relativeDeltaOil, 0) / activeM.length;
+};
+
+const calculateSResult = (s, activePoints) => {
+  if (!s || activePoints.length === 0) return 0;
+  const activeS = s.filter(item => 
+    activePoints.some(ap => ap.year === item.year)
+  );
+  return activeS.reduce((sum, item) => sum + (item.waters / item.liquid) * 100, 0) / activeS.length;
+};
+
+const calculatePResult = (p, activePoints) => {
+  if (!p || activePoints.length === 0) return 0;
+  const activeP = p.filter(item => 
+    activePoints.some(ap => ap.year === item.year)
+  );
+  return activeP.reduce((sum, item) => sum + item.cumulativeWatercut, 0) / activeP.length;
+};
+
+const calculateKResult = (k, activePoints) => {
+  if (!k || activePoints.length === 0) return 0;
+  const activeK = k.filter(item => 
+    activePoints.some(ap => ap.year === item.year)
+  );
+  return activeK.reduce((sum, item) => sum + item.oilRatio, 0) / activeK.length;
 };
 
 const calculateNS = (data) => {

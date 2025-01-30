@@ -5,12 +5,13 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
   ScatterController
 } from 'chart.js';
-import { Line, Scatter } from 'react-chartjs-2';
+import { Line, Scatter, Bar } from 'react-chartjs-2';
 import { Box, FormControl, RadioGroup, FormControlLabel, Radio, Paper } from '@mui/material';
 
 ChartJS.register(
@@ -18,6 +19,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -50,7 +52,7 @@ const Chart = ({ data, calculations }) => {
               backgroundColor: 'rgba(255, 99, 132, 0.5)',
               type: 'scatter',
             }
-          ],
+          ]
         };
       case 'sp':
         return {
@@ -83,6 +85,20 @@ const Chart = ({ data, calculations }) => {
             }
           ],
         };
+      case 'results':
+        return {
+          labels: calculations?.results?.map(item => item.year) || [],
+          datasets: [
+            {
+              label: 'Results',
+              data: calculations?.results?.map(item => item.value) || [],
+              backgroundColor: 'rgba(53, 162, 235, 0.5)',
+              borderColor: 'rgb(53, 162, 235)',
+              borderWidth: 1,
+              type: 'bar'
+            }
+          ]
+        };
       default:
         return {
           labels: data.map(item => item.year),
@@ -110,22 +126,43 @@ const Chart = ({ data, calculations }) => {
     }
   };
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
+  const getChartOptions = () => {
+    const baseOptions = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: chartType === 'ns' ? 'N/S Analysis' : chartType === 'results' ? 'Final Results' : 'Production Data Analysis',
+        },
       },
-      title: {
-        display: true,
-        text: 'Production Data Analysis',
+    };
+
+    if (chartType === 'results') {
+      return {
+        ...baseOptions,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Value'
+            }
+          }
+        }
+      };
+    }
+
+    return {
+      ...baseOptions,
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
       },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
+    };
   };
 
   return (
@@ -137,21 +174,24 @@ const Chart = ({ data, calculations }) => {
             value={chartType}
             onChange={(e) => setChartType(e.target.value)}
           >
-            <FormControlLabel value="ns" control={<Radio />} label="N-S" />
+            <FormControlLabel value="ns" control={<Radio />} label="N/S Analysis" />
             <FormControlLabel value="sp" control={<Radio />} label="S-P" />
             <FormControlLabel value="m" control={<Radio />} label="M" />
             <FormControlLabel value="s" control={<Radio />} label="S" />
             <FormControlLabel value="p" control={<Radio />} label="P" />
             <FormControlLabel value="k" control={<Radio />} label="K" />
+            <FormControlLabel value="results" control={<Radio />} label="Results" />
           </RadioGroup>
         </FormControl>
       </Paper>
       
       <Paper sx={{ p: 2 }}>
         {getChartData().datasets.some(dataset => dataset.type === 'scatter') ? (
-          <Scatter options={options} data={getChartData()} />
+          <Scatter options={getChartOptions()} data={getChartData()} />
+        ) : chartType === 'results' ? (
+          <Bar options={getChartOptions()} data={getChartData()} />
         ) : (
-          <Line options={options} data={getChartData()} />
+          <Line options={getChartOptions()} data={getChartData()} />
         )}
       </Paper>
     </Box>
