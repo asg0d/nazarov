@@ -131,6 +131,18 @@ const Chart = ({ data, calculations }) => {
             }
           ]
         };
+      case 'k':
+        return {
+          labels: data.map(item => item.year),
+          datasets: [
+            {
+              label: 'Oil Ratio',
+              data: calculations?.k_calc?.map(item => item.oilRatio) || [],
+              borderColor: 'rgb(153, 102, 255)',
+              backgroundColor: 'rgba(153, 102, 255, 0.5)',
+            }
+          ]
+        };
       case 'results':
         console.log('Results data:', calculations?.results);
         // Make sure we have valid results data
@@ -250,8 +262,8 @@ const Chart = ({ data, calculations }) => {
       };
       
       const chartTypes = {
-        'NS Analysis': 'ns',
-        'SP Analysis': 'sp',
+        'N/S Analysis': 'ns',
+        'S/P Analysis': 'sp',
         'M Analysis': 'm',
         'S Analysis': 's',
         'P Analysis': 'p',

@@ -6,6 +6,7 @@ import DataTable from './components/DataTable'
 import Chart from './components/Chart'
 import ActivePoints from './components/ActivePoints'
 import DataTabs from './components/TabPanel'
+import ReservesResults from './components/ReservesResults'
 import { calculateAll } from './services/calculations'
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
             <>
               <Chart data={data} calculations={calculations} />
               <DataTabs data={data} calculations={calculations} />
+              <ReservesResults calculations={calculations} />
             </>
           )}
         </Box>

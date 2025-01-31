@@ -7,6 +7,7 @@ export const calculateAll = (data) => {
   const s = calculateS(data);
   const p = calculateP(data);
   const k = calculateK(data);
+  const reserves = calculateRecoverableReserves(data);
 
   return {
     ns_calc: ns,
@@ -15,6 +16,7 @@ export const calculateAll = (data) => {
     s_calc: s,
     p_calc: p,
     k_calc: k,
+    reserves_calc: reserves,
     results: calculateResults(data, ns, sp, m, s, p, k)
   };
 };
@@ -29,6 +31,22 @@ const calculateResults = (data, ns, sp, m, s, p, k) => {
   const avgLiquid = activePoints.reduce((sum, row) => sum + parseFloat(row.liquid), 0) / activePoints.length;
   const avgOil = activePoints.reduce((sum, row) => sum + parseFloat(row.oil), 0) / activePoints.length;
   
+  // Calculate recoverable reserves for active points
+  const avgWater = avgLiquid - avgOil;
+  const vmax = avgLiquid * 0.9; // 90% recovery factor
+  const vfo = avgOil * 0.85;    // 85% oil recovery factor
+  const vfw = avgWater * 0.95;  // 95% water recovery factor
+  
+  // Calculate cumulative values
+  const cumulativeOil = data.reduce((sum, row) => sum + parseFloat(row.oil), 0);
+  const cumulativeLiquid = data.reduce((sum, row) => sum + parseFloat(row.liquid), 0);
+  const cumulativeWater = cumulativeLiquid - cumulativeOil;
+  
+  // Calculate remaining reserves
+  const remainingVmax = vmax - cumulativeLiquid;
+  const remainingVfo = vfo - cumulativeOil;
+  const remainingVfw = vfw - cumulativeWater;
+  
   // Calculate final results based on all methods
   const results = [
     { year: 'N/S', value: calculateNSResult(ns, activePoints) },
@@ -36,7 +54,13 @@ const calculateResults = (data, ns, sp, m, s, p, k) => {
     { year: 'M', value: calculateMResult(m, activePoints) },
     { year: 'S', value: calculateSResult(s, activePoints) },
     { year: 'P', value: calculatePResult(p, activePoints) },
-    { year: 'K', value: calculateKResult(k, activePoints) }
+    { year: 'K', value: calculateKResult(k, activePoints) },
+    { year: 'Vmax', value: vmax },
+    { year: 'V fo', value: vfo },
+    { year: 'v fw', value: vfw },
+    { year: 'Remaining Vmax', value: remainingVmax },
+    { year: 'Remaining V fo', value: remainingVfo },
+    { year: 'Remaining v fw', value: remainingVfw }
   ];
 
   return results.filter(result => !isNaN(result.value) && isFinite(result.value));
@@ -88,6 +112,32 @@ const calculateKResult = (k, activePoints) => {
     activePoints.some(ap => ap.year === item.year)
   );
   return activeK.reduce((sum, item) => sum + item.oilRatio, 0) / activeK.length;
+};
+
+const calculateRecoverableReserves = (data) => {
+  if (!data || data.length === 0) return [];
+  
+  return data.map((row, index) => {
+    const liquid = parseFloat(row.liquid) || 0;
+    const oil = parseFloat(row.oil) || 0;
+    const water = liquid - oil;
+    
+    // Calculate Vmax (maximum recoverable reserves)
+    const vmax = liquid * 0.9; // Assuming 90% recovery factor
+    
+    // Calculate V fo (recoverable oil reserves)
+    const vfo = oil * 0.85; // Assuming 85% oil recovery factor
+    
+    // Calculate v fw (recoverable water reserves)
+    const vfw = water * 0.95; // Assuming 95% water recovery factor
+    
+    return {
+      year: row.year,
+      vmax,
+      vfo,
+      vfw
+    };
+  });
 };
 
 const calculateNS = (data) => {

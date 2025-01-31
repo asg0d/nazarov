@@ -6,5 +6,19 @@
     "chart": "График",
     "statistics": "Статистика",
     "data": "Данные"
+  },
+  "reserves": {
+    "title": "Расчет запасов",
+    "recoverable": "Извлекаемые запасы",
+    "remaining": "Остаточные запасы",
+    "export": "Экспорт в Excel",
+    "parameters": {
+      "vmax": "Vmax (Максимально извлекаемые)",
+      "vfo": "V fo (Извлекаемая нефть)",
+      "vfw": "v fw (Извлекаемая вода)",
+      "remainingVmax": "Остаточный Vmax",
+      "remainingVfo": "Остаточный V fo",
+      "remainingVfw": "Остаточный v fw"
+    }
   }
 }

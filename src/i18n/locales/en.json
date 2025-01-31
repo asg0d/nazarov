@@ -6,5 +6,19 @@
     "chart": "Chart",
     "statistics": "Statistics",
     "data": "Data"
+  },
+  "reserves": {
+    "title": "Reserves Calculation",
+    "recoverable": "Recoverable Reserves",
+    "remaining": "Remaining Reserves",
+    "export": "Export to Excel",
+    "parameters": {
+      "vmax": "Vmax (Maximum Recoverable)",
+      "vfo": "V fo (Recoverable Oil)",
+      "vfw": "v fw (Recoverable Water)",
+      "remainingVmax": "Remaining Vmax",
+      "remainingVfo": "Remaining V fo",
+      "remainingVfw": "Remaining v fw"
+    }
   }
 }

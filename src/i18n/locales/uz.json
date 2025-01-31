@@ -6,5 +6,19 @@
     "chart": "Grafik",
     "statistics": "Statistika",
     "data": "Ma'lumotlar"
+  },
+  "reserves": {
+    "title": "Zaxiralar hisobi",
+    "recoverable": "Qazib olinadigan zaxiralar",
+    "remaining": "Qolgan zaxiralar",
+    "export": "Excel-ga eksport",
+    "parameters": {
+      "vmax": "Vmax (Maksimal qazib olinadigan)",
+      "vfo": "V fo (Qazib olinadigan neft)",
+      "vfw": "v fw (Qazib olinadigan suv)",
+      "remainingVmax": "Qolgan Vmax",
+      "remainingVfo": "Qolgan V fo",
+      "remainingVfw": "Qolgan v fw"
+    }
   }
 }
